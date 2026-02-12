@@ -6,17 +6,16 @@ import br.com.alura.screenmatch.model.DadosTemporadas;
 import br.com.alura.screenmatch.service.ConsumoAPI;
 import br.com.alura.screenmatch.service.ConverteDados;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Principal {
 
-    private Scanner leitura = new Scanner(System.in);
+    private final Scanner leitura = new Scanner(System.in);
 
-    private ConsumoAPI consumo = new ConsumoAPI();
+    private final ConsumoAPI consumo = new ConsumoAPI();
 
-    private ConverteDados conversor = new ConverteDados();
+    private final ConverteDados conversor = new ConverteDados();
 
     private  final String ENDERECO = "http://www.omdbapi.com/";
     private  final String  APIKEY = "?apikey=98f10c4b&t=";
@@ -49,6 +48,17 @@ public class Principal {
 //        }
 
         temporadas.forEach(t -> t.episodios().forEach(e -> System.out.println(e.titulo())));
+
+        List<DadosEpisodio> dadosEpisodios = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .collect(Collectors.toList());
+
+        System.out.println("\n Top 5 episodios ");
+            dadosEpisodios.stream()
+                    .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                    .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+                    .limit(5)
+                    .forEach(System.out::println);
 
 
 
